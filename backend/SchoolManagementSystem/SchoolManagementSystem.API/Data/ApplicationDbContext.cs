@@ -112,12 +112,12 @@ namespace SchoolManagementSystem.API.Data
 
             builder.Entity<TeacherCourse>()
                 .HasOne(tc => tc.Teacher)
-                .WithMany()
+                .WithMany(t => t.TeacherCourses)
                 .HasForeignKey(tc => tc.TeacherId);
 
             builder.Entity<TeacherCourse>()
                 .HasOne(tc => tc.Course)
-                .WithMany()
+                .WithMany(c => c.TeacherCourses)
                 .HasForeignKey(tc => tc.CourseId);
 
             /* =========================
@@ -128,7 +128,7 @@ namespace SchoolManagementSystem.API.Data
 
             builder.Entity<Exam>()
                 .HasOne(e => e.Course)
-                .WithMany()
+                .WithMany(c => c.Exams)
                 .HasForeignKey(e => e.CourseId);
 
             builder.Entity<Exam>()
@@ -165,7 +165,7 @@ namespace SchoolManagementSystem.API.Data
 
             builder.Entity<Attendance>()
                 .HasOne(a => a.Course)
-                .WithMany()
+                .WithMany(c => c.Attendances)
                 .HasForeignKey(a => a.CourseId);
 
             builder.Entity<Attendance>()
@@ -178,6 +178,10 @@ namespace SchoolManagementSystem.API.Data
              * ========================= */
             builder.Entity<Grade>()
                 .HasKey(g => g.Id);
+
+            builder.Entity<Grade>()
+                .Property(g => g.Score)
+                .HasPrecision(5, 2);
 
             builder.Entity<Grade>()
                 .HasOne(g => g.Student)

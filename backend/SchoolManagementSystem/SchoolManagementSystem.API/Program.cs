@@ -5,10 +5,10 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using SchoolManagementSystem.API.Data;
+using SchoolManagementSystem.API.Middleware;
 using SchoolManagementSystem.API.Repository;
-using System.Security.Claims;
+using SchoolManagementSystem.API.Services;
 using System.Text;
-using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +21,12 @@ DotEnv.Load(new DotEnvOptions(
 
 builder.Configuration.AddEnvironmentVariables();
 
-builder.Services.AddControllers();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+    });
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -65,8 +70,17 @@ option.UseSqlServer(builder.Configuration.GetConnectionString("SchoolManagementS
 builder.Services.AddDbContext<AuthDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("SchoolManagementSystemAuthConnectionString")));
 
-
+// Rgistering Services
 builder.Services.AddScoped<ITokenService, TokenService>();
+builder.Services.AddScoped<IStudentRepository, StudentService>();
+builder.Services.AddScoped<IClassRepository, ClassRepository>();
+builder.Services.AddScoped<IClassService, ClassService>();
+builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+
+// 1. Register the services
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
+
+builder.Services.AddProblemDetails();
 
 
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
@@ -118,6 +132,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseExceptionHandler();
 
 app.UseHttpsRedirection();
 

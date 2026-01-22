@@ -1,4 +1,6 @@
-﻿using System.Diagnostics;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 using System.Security.Claims;
 
 namespace SchoolManagementSystem.API.Models
@@ -7,6 +9,8 @@ namespace SchoolManagementSystem.API.Models
     {
         public Guid Id { get; set; }
         public string IdentityUserId { get; set; }
+
+
 
         public string AdmissionNumber { get; set; }
         public DateTime EnrollmentDate { get; set; }
