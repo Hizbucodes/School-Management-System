@@ -50,8 +50,15 @@ namespace SchoolManagementSystem.API.Data
             /* =========================
              * TEACHER
              * ========================= */
-            builder.Entity<Teacher>()
-                .HasKey(t => t.Id);
+            builder.Entity<Teacher>(entity =>
+            {
+                entity.HasKey(t => t.Id);
+
+                // Make sure IdentityUserId is just a regular column, no FK
+                entity.Property(t => t.IdentityUserId)
+                    .IsRequired()
+                    .HasMaxLength(450); // Match IdentityUser.Id length
+            });
 
             /* =========================
              * STUDENT ↔ PARENT

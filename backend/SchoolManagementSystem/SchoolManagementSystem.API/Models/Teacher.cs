@@ -1,4 +1,6 @@
-﻿using System.Security.Claims;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Claims;
 using System.Xml;
 
 namespace SchoolManagementSystem.API.Models
@@ -8,10 +10,14 @@ namespace SchoolManagementSystem.API.Models
         public Guid Id { get; set; }
         public string IdentityUserId { get; set; }
 
+        public string FullName { get; set; }
+
         public string Specialization { get; set; }
         public double Salary { get; set; }
         public string DateOfBirth { get; set; }
         public DateTime HireDate { get; set; }
+        public DateTime CreatedAt { get; set; }
+        public DateTime UpdatedAt { get; set; }
 
         public ICollection<TeacherCourse> TeacherCourses { get; set; } = new List<TeacherCourse>();
         public ICollection<Class> Classes { get; set; } = new List<Class>();

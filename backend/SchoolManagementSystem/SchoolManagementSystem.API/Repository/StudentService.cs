@@ -19,10 +19,17 @@ namespace SchoolManagementSystem.API.Repository
 
         public async Task<(bool Succeeded, string Message, Guid? StudentId)> RegisterStudentAsync(StudentRegistrationDto dto)
         {
-           
-            if (_context.Students.Any(s => s.AdmissionNumber == dto.AdmissionNumber))
+
+            using var transaction = await _context.Database.BeginTransactionAsync();
+
+            if (await _context.Students.AnyAsync(s => s.AdmissionNumber == dto.AdmissionNumber))
                 return (false, "Admission number already exists.", null);
 
+            // 2. Check if email exists
+            if (await _userManager.FindByEmailAsync(dto.Email) != null)
+            {
+                return (false, "Email address is already registered.", null);
+            }
 
             var classExists = await _context.Classes.AnyAsync(c => c.Id == dto.ClassId);
             if (!classExists)
@@ -30,7 +37,6 @@ namespace SchoolManagementSystem.API.Repository
                 return (false, "The selected Class does not exist. Please provide a valid ClassId.", null);
             }
 
-            using var transaction = await _context.Database.BeginTransactionAsync();
 
             try
             {

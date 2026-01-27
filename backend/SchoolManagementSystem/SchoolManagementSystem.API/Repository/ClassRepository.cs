@@ -52,21 +52,8 @@ namespace SchoolManagementSystem.API.Repository
 
         public async Task<Class> UpdateClassAsync(Guid id, Class entity, CancellationToken cancellationToken = default)
         {
-            var classExist = await _context.Classes.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-
-            if(classExist is null)
-            {
-                return null;
-            }
-
-
-            classExist.Name = entity.Name;
-            classExist.AcademicYear = entity.AcademicYear;
-            classExist.ClassTeacherId = entity.ClassTeacherId;
-            classExist.UpdatedAt = DateTime.UtcNow;
-
             await _context.SaveChangesAsync(cancellationToken);
-            return classExist;
+            return entity;
 
         }
     }

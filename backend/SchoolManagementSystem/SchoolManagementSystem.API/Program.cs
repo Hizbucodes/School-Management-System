@@ -76,6 +76,7 @@ builder.Services.AddScoped<IStudentRepository, StudentService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<ITeacherService, TeacherService>();
 
 // 1. Register the services
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
