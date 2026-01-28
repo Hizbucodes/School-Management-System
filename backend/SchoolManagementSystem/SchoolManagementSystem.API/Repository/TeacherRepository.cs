@@ -42,7 +42,7 @@ namespace SchoolManagementSystem.API.Repository
 
         public async Task<IEnumerable<Teacher>> GetAllAsync(CancellationToken cancellationToken)
         {
-            return await _context.Teachers.Include(t => t.IdentityUserId).AsNoTracking().ToListAsync();
+            return await _context.Teachers.AsNoTracking().ToListAsync();
         }
 
         public async Task<Teacher?> GetByIdAsync(Guid id, CancellationToken cancellationToken)

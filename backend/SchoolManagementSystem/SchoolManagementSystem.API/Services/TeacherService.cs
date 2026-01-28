@@ -127,6 +127,8 @@ namespace SchoolManagementSystem.API.Services
             existingTeacher.UpdatedAt = dto.UpdatedAt;
             existingTeacher.HireDate = dto.HireDate;
             existingTeacher.DateOfBirth = dto.DateOfBirth;
+            existingTeacher.Salary = dto.Salary;
+            existingTeacher.CreatedAt = dto.CreatedAt;
 
             // 3. Save via repository
             return await _teacherRepository.UpdateAsync(existingTeacher, cancellationToken);
