@@ -70,7 +70,7 @@ option.UseSqlServer(builder.Configuration.GetConnectionString("SchoolManagementS
 builder.Services.AddDbContext<AuthDbContext>(option =>
 option.UseSqlServer(builder.Configuration.GetConnectionString("SchoolManagementSystemAuthConnectionString")));
 
-// Rgistering Services
+// Rgistering Respository & Services
 builder.Services.AddScoped<ITokenService, TokenService>();
 builder.Services.AddScoped<IStudentRepository, StudentService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
@@ -79,8 +79,10 @@ builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
 builder.Services.AddScoped<ITeacherService, TeacherService>();
 builder.Services.AddScoped<ICourseRepository, CourseRepository>();
 builder.Services.AddScoped<ICourseService, CourseService>();
+builder.Services.AddScoped<ICourseAssignmentRepository, CourseAssignmentRepository>();
+builder.Services.AddScoped<ICourseAssignmentService, CourseAssignmentService>();
 
-// 1. Register the services
+
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 builder.Services.AddProblemDetails();

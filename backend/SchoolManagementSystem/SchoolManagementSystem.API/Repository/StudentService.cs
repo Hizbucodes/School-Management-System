@@ -17,6 +17,11 @@ namespace SchoolManagementSystem.API.Repository
             _context = context;
         }
 
+        public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            return await _context.Students.AnyAsync(s => s.Id == id, cancellationToken);
+        }
+
         public async Task<(bool Succeeded, string Message, Guid? StudentId)> RegisterStudentAsync(StudentRegistrationDto dto)
         {
 
