@@ -11,5 +11,7 @@ namespace SchoolManagementSystem.API.Repository
         Task<Class?> UpdateClassAsync(Guid id, Class entity, CancellationToken cancellationToken = default);
         Task<Class> DeleteClassAsync(Guid id, CancellationToken cancellationToken = default);
         Task<bool> ExistsAsync(string name, string year, CancellationToken cancellationToken = default);
+
+        Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default);
     }
 }

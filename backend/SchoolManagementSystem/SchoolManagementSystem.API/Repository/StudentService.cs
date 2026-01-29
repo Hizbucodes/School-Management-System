@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.API.Data;
 using SchoolManagementSystem.API.Dtos;
+using SchoolManagementSystem.API.Exceptions;
 using SchoolManagementSystem.API.Models;
 
 namespace SchoolManagementSystem.API.Repository
@@ -20,6 +21,19 @@ namespace SchoolManagementSystem.API.Repository
         public async Task<bool> ExistsAsync(Guid id, CancellationToken cancellationToken = default)
         {
             return await _context.Students.AnyAsync(s => s.Id == id, cancellationToken);
+        }
+
+        public async Task<Student> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var student = await _context.Students.FirstOrDefaultAsync(s => s.Id == id, cancellationToken);
+
+            if (student is null)
+            {
+                throw new NotFoundException($"Student with ID {id} not found.");
+            }
+
+            return student;
+
         }
 
         public async Task<(bool Succeeded, string Message, Guid? StudentId)> RegisterStudentAsync(StudentRegistrationDto dto)
@@ -83,5 +97,8 @@ namespace SchoolManagementSystem.API.Repository
                 return (false, "An internal error occurred during registration.", null);
             }
         }
+
+
+
     }
 }

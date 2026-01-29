@@ -35,6 +35,13 @@ namespace SchoolManagementSystem.API.Repository
             return classExist;
         }
 
+        public async Task<bool> ExistAsync(Guid id, CancellationToken cancellationToken = default)
+        {
+            var classExist = await _context.Classes.FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
+
+            return (classExist is null) ? false : true;
+        }
+
         public async Task<bool> ExistsAsync(string name, string year, CancellationToken cancellationToken = default)
         {
             return await _context.Classes.AnyAsync(c => c.Name == name && c.AcademicYear == year, cancellationToken);

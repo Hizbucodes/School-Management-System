@@ -109,32 +109,5 @@ namespace SchoolManagementSystem.API.Controllers
             return Ok(exists);
         }
 
-        //[HttpGet("by-subject/{subjectId:guid}")]
-        //[ProducesResponseType(typeof(IEnumerable<TeacherDto>), StatusCodes.Status200OK)]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //public async Task<IActionResult> GetBySubject(
-        //    Guid subjectId,
-        //    CancellationToken cancellationToken)
-        //{
-        //    var teachers = await _teacherService.GetBySubjectAsync(subjectId, cancellationToken);
-        //    return Ok(teachers);
-        //}
-
-
-        //[HttpPost("{id:guid}/subjects")]
-        //[Authorize(Roles = "Admin")]
-        //[ProducesResponseType(StatusCodes.Status204NoContent)]
-        //[ProducesResponseType(StatusCodes.Status400BadRequest)]
-        //[ProducesResponseType(StatusCodes.Status404NotFound)]
-        //[ProducesResponseType(StatusCodes.Status401Unauthorized)]
-        //[ProducesResponseType(StatusCodes.Status403Forbidden)]
-        //public async Task<IActionResult> AssignSubject(
-        //    Guid id,
-        //    [FromBody] SubjectAssignmentDto dto,
-        //    CancellationToken cancellationToken)
-        //{
-        //    await _teacherService.AssignSubjectAsync(id, dto, cancellationToken);
-        //    return NoContent();
-        //}
     }
 }
