@@ -72,7 +72,8 @@ option.UseSqlServer(builder.Configuration.GetConnectionString("SchoolManagementS
 
 // Rgistering Respository & Services
 builder.Services.AddScoped<ITokenService, TokenService>();
-builder.Services.AddScoped<IStudentRepository, StudentService>();
+builder.Services.AddScoped<IStudentRepository, StudentRepository>();
+builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IClassService, ClassService>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();

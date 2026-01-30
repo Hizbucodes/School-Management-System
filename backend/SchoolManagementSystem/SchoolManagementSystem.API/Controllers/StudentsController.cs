@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementSystem.API.Dtos;
 using SchoolManagementSystem.API.Repository;
+using SchoolManagementSystem.API.Services;
 
 namespace SchoolManagementSystem.API.Controllers
 {
@@ -11,27 +12,129 @@ namespace SchoolManagementSystem.API.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly UserManager<IdentityUser> _userManager;
-        private readonly RoleManager<IdentityRole> _roleManager;
-        private readonly IStudentRepository _studentService;
+        private readonly IStudentService _studentService;
+        private readonly ILogger<StudentsController> _logger;
 
-        public StudentsController(UserManager<IdentityUser> userManager, RoleManager<IdentityRole> roleManager, IStudentRepository studentRepository)
+        public StudentsController(
+            IStudentService studentService,
+            ILogger<StudentsController> logger)
         {
-            _userManager = userManager;
-            _roleManager = roleManager;
-            this._studentService = studentRepository;
+            _studentService = studentService;
+            _logger = logger;
         }
 
+
+        [HttpPost("register")]
         [Authorize(Roles = "Admin")]
-        [HttpPost("create-student")]
-        public async Task<IActionResult> CreateStudent([FromBody] StudentRegistrationDto dto)
+        [ProducesResponseType(StatusCodes.Status201Created)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> RegisterStudent(
+            [FromBody] StudentRegistrationDto dto,
+            CancellationToken cancellationToken)
         {
-            var result = await _studentService.RegisterStudentAsync(dto);
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
 
-            if (!result.Succeeded)
-                return BadRequest(new { message = result.Message });
+            var (succeeded, message, studentId) = await _studentService.RegisterStudentAsync(dto, cancellationToken);
 
-            return Ok(new { message = result.Message, studentId = result.StudentId });
+            if (!succeeded)
+                return BadRequest(new { message });
+
+            return CreatedAtAction(
+                nameof(GetStudentById),
+                new { id = studentId },
+                new { message, studentId });
+        }
+
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<StudentResponseDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetAllStudents(CancellationToken cancellationToken)
+        {
+            var students = await _studentService.GetAllStudentsAsync(cancellationToken);
+            return Ok(students);
+        }
+
+
+        [HttpGet("{id}")]
+        [ProducesResponseType(typeof(StudentResponseDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStudentById(Guid id, CancellationToken cancellationToken)
+        {
+            var student = await _studentService.GetStudentByIdAsync(id, cancellationToken);
+
+            if (student == null)
+                return NotFound(new { message = "Student not found." });
+
+            return Ok(student);
+        }
+
+
+        [HttpGet("{id}/details")]
+        [ProducesResponseType(typeof(StudentDetailDto), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> GetStudentDetails(Guid id, CancellationToken cancellationToken)
+        {
+            var student = await _studentService.GetStudentDetailsAsync(id, cancellationToken);
+
+            if (student == null)
+                return NotFound(new { message = "Student not found." });
+
+            return Ok(student);
+        }
+
+
+        [HttpGet("class/{classId}")]
+        [ProducesResponseType(typeof(IEnumerable<StudentResponseDto>), StatusCodes.Status200OK)]
+        public async Task<IActionResult> GetStudentsByClass(Guid classId, CancellationToken cancellationToken)
+        {
+            var students = await _studentService.GetStudentsByClassAsync(classId, cancellationToken);
+            return Ok(students);
+        }
+
+
+        [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStudent(
+            Guid id,
+            [FromBody] StudentUpdateDto dto,
+            CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var (succeeded, message) = await _studentService.UpdateStudentAsync(id, dto, cancellationToken);
+
+            if (!succeeded)
+            {
+                if (message.Contains("not found"))
+                    return NotFound(new { message });
+                return BadRequest(new { message });
+            }
+
+            return Ok(new { message });
+        }
+
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> DeleteStudent(Guid id, CancellationToken cancellationToken)
+        {
+            var (succeeded, message) = await _studentService.DeleteStudentAsync(id, cancellationToken);
+
+            if (!succeeded)
+            {
+                if (message.Contains("not found"))
+                    return NotFound(new { message });
+                return BadRequest(new { message });
+            }
+
+            return Ok(new { message });
         }
     }
 }
