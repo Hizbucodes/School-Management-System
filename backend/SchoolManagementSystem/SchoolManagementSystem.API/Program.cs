@@ -84,6 +84,8 @@ builder.Services.AddScoped<ICourseAssignmentRepository, CourseAssignmentReposito
 builder.Services.AddScoped<ICourseAssignmentService, CourseAssignmentService>();
 builder.Services.AddScoped<IAttendanceRepository, AttendanceRepository>();
 builder.Services.AddScoped<IAttendanceService, AttendanceService>();
+builder.Services.AddScoped<IExamRepository, ExamRepository>();
+builder.Services.AddScoped<IExamService, ExamService>();
 
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
