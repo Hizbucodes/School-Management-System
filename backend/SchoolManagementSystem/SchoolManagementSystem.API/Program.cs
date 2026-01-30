@@ -88,6 +88,9 @@ builder.Services.AddScoped<IExamRepository, ExamRepository>();
 builder.Services.AddScoped<IExamService, ExamService>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<IGradeService, GradeService>();
+builder.Services.AddScoped<ITimeTableRepository, TimeTableRepository>();
+builder.Services.AddScoped<ITimeTableService, TimeTableService>();
+
 
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
