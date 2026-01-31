@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.API.Data;
 using SchoolManagementSystem.API.Dtos;
+using SchoolManagementSystem.API.Helpers;
 using SchoolManagementSystem.API.Models;
 using SchoolManagementSystem.API.Repository;
 
@@ -230,29 +231,38 @@ namespace SchoolManagementSystem.API.Services
             };
         }
 
-        public async Task<IEnumerable<StudentResponseDto>> GetAllStudentsAsync(
+        public async Task<PagedList<StudentResponseDto>> GetAllStudentsAsync(QueryParameters parameters,
             CancellationToken cancellationToken = default)
         {
-            var students = await _studentRepository.GetAllAsync(cancellationToken);
+     
+            var pagedStudents = await _studentRepository.GetAllAsync(parameters, cancellationToken);
 
-            var studentDtos = new List<StudentResponseDto>();
+           
+            var userIds = pagedStudents.Items.Select(s => s.IdentityUserId).ToList();
 
-            foreach (var student in students)
+
+            var users = await _userManager.Users
+                .Where(u => userIds.Contains(u.Id))
+                .ToDictionaryAsync(u => u.Id, cancellationToken);
+
+       
+            var studentDtos = pagedStudents.Items.Select(student => new StudentResponseDto
             {
-                var user = await _userManager.FindByIdAsync(student.IdentityUserId);
+                Id = student.Id,
+                AdmissionNumber = student.AdmissionNumber,
+   
+                Email = users.ContainsKey(student.IdentityUserId) ? users[student.IdentityUserId].Email : "N/A",
+                EnrollmentDate = student.EnrollmentDate,
+                ClassId = student.ClassId,
+                ClassName = student.Class?.Name ?? "N/A"
+            }).ToList();
 
-                studentDtos.Add(new StudentResponseDto
-                {
-                    Id = student.Id,
-                    AdmissionNumber = student.AdmissionNumber,
-                    Email = user?.Email ?? "N/A",
-                    EnrollmentDate = student.EnrollmentDate,
-                    ClassId = student.ClassId,
-                    ClassName = student.Class?.Name ?? "N/A"
-                });
-            }
-
-            return studentDtos;
+            return new PagedList<StudentResponseDto>(
+                studentDtos,
+                pagedStudents.TotalCount,
+                pagedStudents.CurrentPage,
+                pagedStudents.PageSize
+            );
         }
 
         public async Task<IEnumerable<StudentResponseDto>> GetStudentsByClassAsync(

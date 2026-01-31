@@ -1,4 +1,5 @@
 ﻿using SchoolManagementSystem.API.Dtos;
+using SchoolManagementSystem.API.Helpers;
 
 namespace SchoolManagementSystem.API.Services
 {
@@ -14,7 +15,7 @@ namespace SchoolManagementSystem.API.Services
 
         Task<StudentResponseDto?> GetStudentByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<StudentDetailDto?> GetStudentDetailsAsync(Guid id, CancellationToken cancellationToken = default);
-        Task<IEnumerable<StudentResponseDto>> GetAllStudentsAsync(CancellationToken cancellationToken = default);
+        Task<PagedList<StudentResponseDto>> GetAllStudentsAsync(QueryParameters parameters, CancellationToken cancellationToken = default);
         Task<IEnumerable<StudentResponseDto>> GetStudentsByClassAsync(Guid classId, CancellationToken cancellationToken = default);
     }
 }

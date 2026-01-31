@@ -1,4 +1,5 @@
 ﻿using SchoolManagementSystem.API.Dtos;
+using SchoolManagementSystem.API.Helpers;
 using SchoolManagementSystem.API.Models;
 
 namespace SchoolManagementSystem.API.Repository
@@ -8,7 +9,7 @@ namespace SchoolManagementSystem.API.Repository
         Task<Student?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default);
         Task<Student?> GetByAdmissionNumberAsync(string admissionNumber, CancellationToken cancellationToken = default);
         Task<Student?> GetByIdentityUserIdAsync(string identityUserId, CancellationToken cancellationToken = default);
-        Task<IEnumerable<Student>> GetAllAsync(CancellationToken cancellationToken = default);
+        Task<PagedList<Student>> GetAllAsync(QueryParameters parameters, CancellationToken cancellationToken = default);
         Task<IEnumerable<Student>> GetByClassIdAsync(Guid classId, CancellationToken cancellationToken = default);
         Task<Student> CreateAsync(Student student, CancellationToken cancellationToken = default);
         Task<Student> UpdateAsync(Student student, CancellationToken cancellationToken = default);

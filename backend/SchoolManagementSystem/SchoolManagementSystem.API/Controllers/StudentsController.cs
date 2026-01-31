@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementSystem.API.Dtos;
+using SchoolManagementSystem.API.Helpers;
 using SchoolManagementSystem.API.Repository;
 using SchoolManagementSystem.API.Services;
 
@@ -49,9 +50,9 @@ namespace SchoolManagementSystem.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<StudentResponseDto>), StatusCodes.Status200OK)]
-        public async Task<IActionResult> GetAllStudents(CancellationToken cancellationToken)
+        public async Task<IActionResult> GetAllStudents([FromQuery] QueryParameters parameters, CancellationToken cancellationToken)
         {
-            var students = await _studentService.GetAllStudentsAsync(cancellationToken);
+            var students = await _studentService.GetAllStudentsAsync( parameters, cancellationToken);
             return Ok(students);
         }
 

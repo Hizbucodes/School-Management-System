@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SchoolManagementSystem.API.Data;
+using SchoolManagementSystem.API.Helpers;
 using SchoolManagementSystem.API.Models;
 
 namespace SchoolManagementSystem.API.Repository
@@ -34,11 +35,34 @@ namespace SchoolManagementSystem.API.Repository
                 .FirstOrDefaultAsync(s => s.IdentityUserId == identityUserId, cancellationToken);
         }
 
-        public async Task<IEnumerable<Student>> GetAllAsync(CancellationToken cancellationToken = default)
+        public async Task<PagedList<Student>> GetAllAsync(QueryParameters parameters, CancellationToken cancellationToken = default)
         {
-            return await _context.Students
+            var query = _context.Students
                 .Include(s => s.Class)
-                .ToListAsync(cancellationToken);
+                .AsNoTracking();
+
+            // 2. Apply Filtering (Search)
+            if (!string.IsNullOrWhiteSpace(parameters.SearchTerm))
+            {
+                var search = parameters.SearchTerm.ToLower();
+                query = query.Where(s =>
+                    s.AdmissionNumber.ToLower().Contains(search));
+            }
+
+            // 3. Apply Sorting
+            query = parameters.SortBy switch
+            {
+                "AdmissionNumber" => parameters.IsDescending
+                    ? query.OrderByDescending(s => s.AdmissionNumber)
+                    : query.OrderBy(s => s.AdmissionNumber),
+                "EnrollmentDate" => parameters.IsDescending
+                    ? query.OrderByDescending(s => s.EnrollmentDate)
+                    : query.OrderBy(s => s.EnrollmentDate),
+                _ => query.OrderBy(s => s.Id)
+            };
+
+         
+            return await PagedList<Student>.CreateAsync(query, parameters.PageNumber, parameters.PageSize);
         }
 
         public async Task<IEnumerable<Student>> GetByClassIdAsync(Guid classId, CancellationToken cancellationToken = default)
